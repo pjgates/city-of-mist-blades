@@ -1,112 +1,109 @@
 {
-	"id": "city-of-mist-blades",
-	"title": "City of Mist (Blades Variant)",
-	"description": "Unofficial City of Mist RPG system",
-	"authors": [
-		{
-			"name": "Taragnor",
-			"discord": "Taragnor#3338",
-			"flags": {}
-		},
-		{
-			"name": "Eldaeros",
-			"discord": "eldaeros",
-			"flags": {}
-		}
-	],
-	"url": "https://github.com/pjgates/city-of-mist-blades/",
-	"version": "0.0.1",
-	"compatibility": {
-		"minimum": "12",
-		"verified": "12",
-		"maximum": "12"
-	},
-	"esmodules": [
-		"module/city.js"
-  ],
-  "styles": [
-	  "styles/city.css",
-	  "module/token-tooltip/tooltip.css",
-	  "module/city-status-tracker/city-status-tracker.css",
-	  "styles/com.css",
-	  "styles/otherscape.css",
-	  "styles/legend.css",
-	  "styles/mist-engine.css"
-  ],
-  "languages": [
-	  {
-		  "lang": "en",
-		  "name": "English",
-		  "path": "lang/en.json",
-		  "flags": {}
-	  },
-	  {
-		  "lang": "de",
-		  "name": "German",
-		  "path": "lang/de.json",
-		  "flags": {}
-	  },
-	  {
-		  "lang": "pl",
-		  "name": "Polish",
-		  "path": "lang/pl.json",
-		  "flags": {}
-	  },
-	  {
-		  "lang": "pt-BR",
-		  "name": "Português (Brasil)",
-		  "path": "lang/pt-br.json",
-		  "flags": {}
-	  },
-	  {
-		  "lang": "fr",
-		  "name": "French",
-		  "path": "lang/fr.json",
-		  "flags": {}
-	  },
-	  {
-		  "lang": "it",
-		  "name": "Italian",
-		  "path": "lang/it.json",
-		  "flags": {}
-	  },
-	  {
-		  "lang": "es",
-		  "name": "Español (placeholder)",
-		  "path": "lang/es.json",
-		  "flags": {}
-	  }
-
-  ],
-  "packs": [
-    {
-      "name": "themebook",
-      "label": "CoM Data",
-      "system": "city-of-mist",
-      "path": "packs/themebooks.db",
-      "type": "Item",
-      "private": false,
-      "flags": {}
+    "id": "city-of-mist",
+    "title": "City of Mist (Blades Variant)",
+    "description": "Unofficial City of Mist RPG system",
+    "authors": [
+        {
+            "name": "Taragnor",
+            "discord": "Taragnor#3338",
+            "flags": {}
+        },
+        {
+            "name": "Eldaeros",
+            "discord": "eldaeros",
+            "flags": {}
+        }
+    ],
+    "url": "https://github.com/pjgates/city-of-mist-blades/",
+    "version": "0.0.1",
+    "compatibility": {
+        "minimum": "12",
+        "verified": "12",
+        "maximum": "12"
     },
-    {
-      "name": "sampleDangers",
-      "label": "Sample Dangers",
-      "system": "city-of-mist",
-      "path": "packs/sampledangers.db",
-      "type": "Actor",
-      "private": false,
-      "flags": {}
-    },
-    {
-      "name": "macro",
-      "label": "Macros",
-      "system": "city-of-mist",
-      "path": "packs/macro.db",
-      "type": "Macro",
-      "private": false,
-      "flags": {}
-    }
-  ],
-  "socket": true,
-  "manifest": "https://raw.githubusercontent.com/pjgates/city-of-mist-blades/main/system.json",
+    "esmodules": ["module/city.js"],
+    "styles": [
+        "styles/city.css",
+        "module/token-tooltip/tooltip.css",
+        "module/city-status-tracker/city-status-tracker.css",
+        "styles/com.css",
+        "styles/otherscape.css",
+        "styles/legend.css",
+        "styles/mist-engine.css"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json",
+            "flags": {}
+        },
+        {
+            "lang": "de",
+            "name": "German",
+            "path": "lang/de.json",
+            "flags": {}
+        },
+        {
+            "lang": "pl",
+            "name": "Polish",
+            "path": "lang/pl.json",
+            "flags": {}
+        },
+        {
+            "lang": "pt-BR",
+            "name": "Português (Brasil)",
+            "path": "lang/pt-br.json",
+            "flags": {}
+        },
+        {
+            "lang": "fr",
+            "name": "French",
+            "path": "lang/fr.json",
+            "flags": {}
+        },
+        {
+            "lang": "it",
+            "name": "Italian",
+            "path": "lang/it.json",
+            "flags": {}
+        },
+        {
+            "lang": "es",
+            "name": "Español (placeholder)",
+            "path": "lang/es.json",
+            "flags": {}
+        }
+    ],
+    "packs": [
+        {
+            "name": "themebook",
+            "label": "CoM Data",
+            "system": "city-of-mist",
+            "path": "packs/themebooks.db",
+            "type": "Item",
+            "private": false,
+            "flags": {}
+        },
+        {
+            "name": "sampleDangers",
+            "label": "Sample Dangers",
+            "system": "city-of-mist",
+            "path": "packs/sampledangers.db",
+            "type": "Actor",
+            "private": false,
+            "flags": {}
+        },
+        {
+            "name": "macro",
+            "label": "Macros",
+            "system": "city-of-mist",
+            "path": "packs/macro.db",
+            "type": "Macro",
+            "private": false,
+            "flags": {}
+        }
+    ],
+    "socket": true,
+    "manifest": "https://raw.githubusercontent.com/pjgates/city-of-mist-blades/main/system.json"
 }

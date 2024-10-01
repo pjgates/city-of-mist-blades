@@ -44,6 +44,15 @@ export function CITY_SETTINGS() {
 			default: false,
 			restricted: true
 		},
+		"bladesRollMode": {
+			name: "Blades Roll Mode",
+			hint: "Roll using the same system as Blades in the Dark",
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: false,
+			restricted: true
+		},
 
 		"weaknessCap": {
 			name: localize("CityOfMist.settings.weaknessCap.name"),

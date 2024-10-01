@@ -79,9 +79,9 @@ export class HTMLTools {
 				content: html,
 				yes: conf.bind(null, true),
 				no: conf.bind(null, false),
-				defaultYes: !!options?.defaultYes ?? false,
+				defaultYes: !!options?.defaultYes,
 				close: () => {
-					switch (options?.onClose ?? "false") {
+					switch (options?.onClose) {
 						case "false":
 							conf(false);
 						case "true":

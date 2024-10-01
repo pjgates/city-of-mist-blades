@@ -1,0 +1,724 @@
+/* Custom CSS */
+
+/* Global Styles */
+.actor-sheet,
+.scene-tag-window,
+.chat-message,
+.status-line.status,
+span.tag-name-block,
+span.status-name-block,
+.tag-review {
+    font-family: 'Fira Sans Extra Condensed';
+}
+div[role="dialog"] {
+    min-width: fit-content;
+}
+div[role="dialog"] section.window-content {
+    width: auto;
+}
+
+/* Text Styles */
+.empty-extra-placeholder-text,
+.move-text,
+.negative-selected,
+.item-selection-context .tag .negative-selected,
+span.status-with-pips {
+    font-weight: 400;
+}
+
+.tag-review,
+span.flex-tag-name {
+    font-size: 1rem;
+    text-align: left;
+}
+
+span.tag-name-block,
+span.status-name-block {
+    display: grid;
+    grid-template-columns: 20px auto;
+    column-gap: 8px;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+
+.theme-title span.tag-name-block {
+    grid-template-columns: auto;
+}
+
+.theme-title {
+    min-height: 1.5rem;
+    line-height: 2rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-top: 4px;
+}
+
+.theme-title .tag-list {
+    width: 100%;
+}
+
+.theme-title span.flex-tag-name {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+}
+
+.theme-title .tag-symbols {
+    display: none;
+}
+
+/* Flex Row Tags */
+.flex-row.tag {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 40px auto auto;
+    grid-template-areas: "text controls burn trash";
+    min-height: 1.5rem;
+}
+
+.flex-row.tag .flex-line {
+    grid-area: text;
+    display: flex;
+    overflow: hidden;
+    line-height: 1.5rem;
+    width: 100%;
+}
+
+.flex-row.tag .flex-burn-flame-cell,
+.status-line.status .flex-burn-flame-cell {
+    grid-area: burn;
+    min-width: 1.5rem;
+    width: 1.5rem;
+    display: block;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.flex-row.tag .flex-trash,
+.status-line.status .flex-trash {
+    grid-area: trash;
+    min-width: 1.5rem;
+    width: 1.5rem;
+    display: block;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Status Line */
+.status-line.status {
+    display: grid;
+    grid-template-columns: 1fr 40px auto auto;
+    grid-template-areas: "text controls burn trash";
+    height: 1.5rem;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.status-line.status .status-name-block {
+    grid-area: text;
+    display: flex;
+    gap: 13px;
+}
+
+.status-line.status .plus-minus {
+    grid-area: controls;
+}
+
+/* Tag Controls */
+.locked .theme-controls > *,
+.locked .theme-block .flex-trash {
+    display: none;
+}
+
+.locked .Loadout-theme.theme-block .flex-trash,
+.unlocked .Loadout-theme.theme-block .flex-burn-flame-cell {
+    display: block;
+}
+
+.unlocked .theme-block .flex-burn-flame-cell {
+    display: none;
+}
+
+span.tag-symbols {
+    min-width: 1.5rem;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+/* Tag Lists */
+.tag-section,
+.tag-list {
+    display: grid;
+    gap: 4px;
+    grid-auto-rows: auto;
+}
+
+.tag-section .flex-tag-name.tag-select-button,
+.tag-list .flex-tag-name.tag-select-button {
+    display: block;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+
+/* Item Selection */
+.item-selection-context .tag .positive-selected,
+.flex-tag-name .power-tag.name.tag-select-button.positive-selected {
+    margin: 0 -0.25em;
+    padding: 0 0.25em;
+    border-radius: 0;
+}
+
+.item-selection-context .tag .negative-selected {
+    margin: 0 -0.25em;
+    padding: 0 0.25em;
+    border-radius: 0;
+}
+
+.item-selection-context .status-name:hover {
+    text-shadow: 0 0 10px #000000ad;
+    transition-duration: 0.2s;
+    background-image: none;
+    font-weight: 400;
+}
+
+/* Tag Edit Button */
+.tag-edit-button:hover {
+    text-shadow: 0 0 10px #000000ad;
+}
+
+/* Special Tags */
+.weakness-tag {
+    font-style: normal;
+    color: #aa0d0d;
+}
+
+.burn-level-1,
+.burn-level-2,
+.burn-level-3,
+.burn-level-4 {
+    color: black !important;
+    text-shadow: none;
+}
+
+.burned-tag {
+    display: block;
+    min-height: 1.5rem;
+    margin: 0 -0.4em;
+    padding: 0 0.4em;
+    border-radius: 0.8em 0.3em;
+    color: #0000004d !important;
+}
+
+span.status-with-pips::after {
+    content: "*";
+    font-weight: 400;
+}
+
+/* Main and Sub Tags */
+.main-tag {
+    width: 100%;
+    display: block;
+}
+
+.sub-tag {
+    margin-top: 4px;
+}
+
+/* Story Tag Window */
+.story-tag-window .combatant-name {
+    text-align: left;
+    padding-left: 0;
+}
+
+.scene-tag-window {
+    width: 350px;
+}
+
+
+span.status-name.name.positive-selected,
+span.status-name.name.negative-selected,
+.tag .negative-selected,
+.status .negative-selected,
+.negative-selected .tag,
+.negative-selected .status,
+.tag .positive-selected,
+.status .positive-selected,
+.positive-selected .tag,
+.positive-selected .status
+{
+    margin: 0 -0.4em;
+    padding: 0 0.4em;
+    border-radius: 0;
+    font-weight: 400;
+}
+
+span.status-name.name,
+span.flex-tag-name.story-tag {
+    width: fit-content;
+    height: 1.5rem;
+}
+
+span.flex-tag-name:hover {
+    text-shadow: 0 0 10px #000000ad;
+    transition-duration: 0.2s;
+    background-image: none;
+    font-weight: 400;
+}
+
+span.status-name {
+    align-self: center;
+    display: inline-flex;
+    align-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    line-height: 1rem;
+    font-size: 1rem;
+}
+
+span.dotStatus > span {
+    height: 16px;
+    line-height: 1rem;
+    top: 2px;
+    position: relative;
+}
+
+a.toggle-combat {
+    margin-right: 4px;
+    font-size: 1rem;
+}
+
+/* Theme Block Group */
+div.theme-block-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    min-width: 1000px;
+    max-width: 1200px;
+    gap: 8px;
+}
+
+div.flex-theme-block,
+.flip-card.flex-theme-block-flip {
+    width: 100%;
+    max-width: 300px;
+    min-height: 300px;
+}
+
+.flip-card .flip-card-inner,
+.flip-card .flip-card-inner .flipped {
+    min-height: 300px;
+    height: 450px;
+    max-width: 300px;
+}
+
+.flip-card .flip-card-front,
+.flip-card .flip-card-back {
+    height: 100%;
+}
+
+div.theme-block {
+    height: 100%;
+}
+
+.theme-block[data-theme-type="character"],
+.theme-block[data-theme-type="crew"] {
+    display: grid;
+    grid-template-rows: 1fr 100px;
+    height: 100%;
+}
+
+.theme-block[data-theme-type="character"] .tag-section ul:last-of-type,
+.theme-block[data-theme-type="crew"] .tag-section ul:last-of-type {
+    border-top: 1px dashed #0000007a;
+    padding-top: 4px;
+}
+
+/* Mist Engine Theme Block */
+.mist-engine-theme-block .top-section {
+    height: auto;
+    min-height: 0;
+}
+
+/* Hide Elements */
+img.img-flame {
+    display: none;
+}
+
+div[data-theme-type="character"] .tag-symbols a:not(:last-of-type),
+div[data-theme-type="crew"] .tag-symbols a:not(:last-of-type),
+.roll-dialog .tag-symbols a:not(:last-of-type),
+.selected-list .tag-symbols a:not(:last-of-type),
+.suggestion-list .tag-symbols a:not(:last-of-type),
+.mist-engine-theme-block .tag-symbols a:not(:last-of-type) {
+    display: none;
+}
+
+.sub-tag span.tag-symbols a[title="Bonus Tag"] {
+    display: none;
+}
+
+/* Tooltip */
+.city-of-mist--tooltip .city-of-mist--name.item-selection-context {
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    font-family: 'Fira Sans Extra Condensed';
+}
+
+.city-of-mist--tooltip .flex-row-center {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    font-size: 1.1rem;
+    height: 2rem;
+    align-items: center;
+    border-bottom: 1px solid rgb(0 0 0 / 50%);
+    padding-bottom: 4px;
+    background-color: #371e40;
+    padding: 0px 8px;
+    color: white;
+}
+
+.city-of-mist--tooltip .token-tooltip-container {
+    display: grid;
+    margin: 0;
+    color: black;
+	max-width: 400px;
+	min-width: 200px;
+}
+
+.city-of-mist--tooltip .tool-tip.flex-row {
+    padding: 0;
+    margin: 0;
+	max-width: 400px;
+}
+
+.city-of-mist--tooltip .tag-or-status {
+    font-family: 'Fira Sans Extra Condensed';
+    margin: 0;
+    min-height: 2rem;
+    padding: 4px 8px;
+}
+
+.city-of-mist--tooltip .tooltip-token-name {
+    text-transform: uppercase;
+    font-weight: 400;
+    text-decoration: none;
+    font-family: 'Rift Bold';
+}
+
+.city-of-mist--tooltip.city-of-mist--show {
+    background: rgb(255 255 255 / 94%);
+    border-radius: 0;
+    border: 2px solid transparent;
+}
+
+.city-of-mist--tooltip .shrink-icon {
+    width: 1.5rem;
+}
+
+/* Roll Dialog */
+.modifier.flex-row-center.approved {
+    display: grid;
+    grid-template-columns: auto 20px auto auto;
+    justify-content: start;
+    align-items: center;
+    gap: 4px;
+    justify-items: start;
+}
+
+/* Theme Improvements */
+span.improvement-name::after {
+    content: ": " attr(title);
+    font-weight: 400;
+    text-transform: none;
+    margin-inline-start: -3px;
+}
+
+span.improvement-name {
+    text-transform: uppercase;
+}
+
+ul.improvement-list {
+    padding: 0;
+    text-align: left;
+    line-height: 1.25rem;
+    font-size: 0.9rem;
+    display: grid;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.theme-book-sheet a.delete-improvement {
+    display: none;
+}
+
+/* Multiple Choice Selector */
+table.single-choice-table tr {
+    display: grid;
+    grid-template-columns: 30px auto;
+    line-height: 1.5rem;
+    font-family: 'Fira Sans Extra Condensed';
+    font-size: 1rem;
+}
+
+table.single-choice-table span.single-choice-item-data {
+    display: inline-block;
+    margin-left: 24px;
+}
+
+table.single-choice-table span.single-choice-item-data:first-letter {
+    margin-left: -22px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+
+/* Chat Messages */
+.improvement-name-send {
+    font-family: 'Fira Sans Extra Condensed';
+    font-weight: 400;
+    background-color: transparent;
+    font-family: 'Rift Bold';
+    font-size: 1.25rem;
+    line-height: 1.5em;
+    font-weight: bold;
+    color: var(--logos-orange);
+    text-align: center;
+    text-decoration: none;
+}
+
+div.improvement-description-send {
+    font-family: 'Fira Sans Extra Condensed';
+}
+
+/* GM Sheet */
+.flip-card-front.story-tag-box {
+    min-width: 250px;
+}
+
+.gmmove-description {
+    font-family: 'Fira Sans Extra Condensed';
+}
+
+section.gm-moves {
+    display: grid;
+    gap: 8px;
+}
+
+h1.gm-moves-header {
+    // display: none;
+}
+
+.gm-move,
+.gm-moves .gm-move.gmmove-select {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas:
+        "text add remove";
+    gap: 4px;
+    align-items: start;
+}
+
+.gm-move > .trash-can-flex {
+    grid-area: remove;
+}
+
+.gmmove-text {
+    grid-area: text;
+    margin: 0;
+    padding: 0;
+    border: none;
+    line-height: 1.5rem;
+    background: none;
+}
+
+.gm-moves > .gm-move > div:last-child {
+    grid-area: add;
+}
+
+span.narrated-story-tag,
+span.narrated-status-name.draggable {
+    padding: 0 0.25rem;
+    margin: 0;
+    border-radius: 0;
+    font-weight: 400;
+    color: black;
+}
+
+*.gmmove-name {
+    font-family: 'Fira Sans Extra Condensed';
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.gmmove-section > hr {
+    display: none;
+}
+
+textarea.gmmove-description {
+    font-size: 1rem;
+}
+
+/* Roll Dialog */
+.modifier.flex-row-center.request-clarification,
+.modifier.flex-row-center.pending,
+.modifier.flex-row-center.approved,
+.modifier.flex-row-center.rejected {
+    display: grid;
+    grid-template-columns: auto 20px auto auto;
+    justify-content: start;
+    align-items: center;
+    gap: 4px;
+    justify-items: start;
+}
+
+span.status-name.name.status-select-button.negative-selected {
+    font-style: normal;
+    color: #aa0d0d;
+    font-family: 'Fira Sans Extra Condensed';
+}
+
+.roll-dialog .flexlarge.status-name-block.status {
+    display: grid;
+    grid-template-columns: 20px auto;
+    column-gap: 8px;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+
+.roll-dialog a.clarification-requested,
+.roll-dialog a.pending,
+.roll-dialog a.approved,
+.roll-dialog a.rejected {
+    border-radius: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -0.1em;
+    padding: 0.1em;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+.roll-dialog a.pending {
+    opacity: 0;
+}
+
+.modifier-list {
+    display: grid;
+    gap: 4px;
+}
+
+.modifier-list .negative-selected,
+.modifier-list .positive-selected,
+.modifier-list .weakness-tag {
+    margin: 0 -0.4em;
+    padding: 0 0.4em;
+    border-radius: 0;
+    font-weight: 400;
+}
+
+.modifier-list .negative-selected,
+.modifier-list .weakness-tag {
+    background: transparent;
+    background-image: linear-gradient(to right, var(--spectrum-red), var(--spectrum-red-light), var(--spectrum-red));
+    color: #400000;
+}
+
+.modifier-list .positive-selected {
+    background: transparent;
+    background-image: linear-gradient(to right, var(--tag-yellow), var(--tag-yellow-light), var(--tag-yellow));
+}
+
+.modifier-list span.status-name.name {
+    line-height: 1.5rem;
+}
+
+
+/* Tag Review */
+.selected-list > *:not(:first-child) {
+    display: grid;
+    grid-template-columns: 1fr 60px;
+    justify-content: start;
+    align-items: center;
+    gap: 4px;
+    justify-items: start;
+    font-weight: 400;
+}
+
+.review-icons {
+    display: grid;
+    grid-template-columns: 20px 20px 20px;
+    align-items: center;
+    justify-items: center;
+}
+.review-icons > a {
+    font-size: 1rem !important;
+}
+
+.flexlarge.status-name-block.status {
+    display: grid;
+    grid-template-columns: 20px auto;
+    column-gap: 8px;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+
+span.status-name.name.status-select-button {
+    font-family: 'Fira Sans Extra Condensed';
+}
+
+.tag-review {
+    min-width: 700px;
+}
+
+.tag-review > br {
+    display: none;
+}
+
+.tag-review > .flex-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.selected-list,
+.suggestion-list {
+    margin-bottom: 16px;
+}
+
+.suggestion-list > *:not(:first-child) {
+    display: grid;
+    grid-template-columns: 1fr 60px;
+    justify-content: start;
+    align-items: center;
+    gap: 4px;
+    justify-items: start;
+    font-weight: 400;
+}
+
+.tag-review .move-name {
+    font-size: 1.5rem;
+}
+
+.tag-review .center-label {
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.tag-review span.tag-symbols {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+

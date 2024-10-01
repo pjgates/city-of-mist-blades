@@ -43,6 +43,10 @@ export class CitySettings {
 		return this.get("devMode");
 	}
 
+	static isBladesMode() {
+		return this.get("bladesRollMode");
+	}
+
 	static burnTemporaryTags() {
 		return this.get("handleTempItems") !="none";
 	}
@@ -137,7 +141,7 @@ export class CitySettings {
 	@return {boolean} if the proper CoM setting si on to atuto award improvements for more than 1 weakness tag
 	*/
 	static autoAwardImpForWeakness(): boolean {
-		return (!!this.get("autoAwardImpForWeakness") ?? false);
+		return (!!this.get("autoAwardImpForWeakness"));
 	}
 
 	static getBaseSystem() {
