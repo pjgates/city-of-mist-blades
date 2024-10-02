@@ -70,5 +70,6 @@
         }
     ],
     "socket": true,
-    "manifest": "https://raw.githubusercontent.com/pjgates/city-of-mist-blades/main/system.json"
+    "manifest": "https://raw.githubusercontent.com/pjgates/city-of-mist-blades/main/system.json",
+    "download": "https://github.com/pjgates/city-of-mist/releases/download/v0.0.1/city-of-mist.zip"
 }
