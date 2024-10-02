@@ -30,15 +30,15 @@ import { CreatedStatusData } from "./mist-roll.js";
 import { CreatedTagData } from "./mist-roll.js";
 
 export class CityRoll {
-    #roll: MistRoll | null;
-    #moveId: string;
-    #actor: CityActor | null;
-    #options: Partial<MistRoll["options"]>;
-    #modifiers: RollModifier[];
-    #tags: RollModifier[];
-    #html: string;
-    #msgId: string;
-    #selectedList: ActivatedTagFormat[];
+    protected roll: MistRoll | null;
+    protected moveId: string;
+    protected actor: CityActor | null;
+    protected options: Partial<MistRoll["options"]>;
+    protected modifiers: RollModifier[];
+    protected tags: RollModifier[];
+    protected html: string;
+    protected msgId: string;
+    protected selectedList: ActivatedTagFormat[];
 
     constructor(
         moveId: string,
@@ -46,21 +46,30 @@ export class CityRoll {
         selectedList: ActivatedTagFormat[] = [],
         options: Partial<MistRoll["options"]> = {},
     ) {
-        this.#roll = null;
-        this.#moveId = moveId;
-        this.#actor = actor;
-        this.#options = options;
-        this.#selectedList = selectedList;
+        this.roll = null;
+        this.moveId = moveId;
+        this.actor = actor;
+        this.options = options;
+        this.selectedList = selectedList;
+    }
+
+    static async getRollClass(): Promise<typeof CityRoll> {
+        if (CitySettings.isBladesMode()) {
+            const { BladesRoll } = await import("./blades-roll.js");
+            return BladesRoll;
+        } else {
+            return CityRoll;
+        }
     }
 
     async execRoll() {
-        this.#prepareModifiers();
-        await this.#getRoll();
-        await this.#getContent();
-        await this.#sendRollToChat();
+        this.prepareModifiers();
+        await this.getRoll();
+        await this.getContent();
+        await this.sendRollToChat();
         try {
-            await this.#secondaryEffects();
-            await this.#rollCleanupAndAftermath();
+            await this.secondaryEffects();
+            await this.rollCleanupAndAftermath();
         } catch (e) {
             console.error(e);
         }
@@ -68,8 +77,8 @@ export class CityRoll {
     }
 
     get move(): Move {
-        const move = CityHelpers.getMoves().find((x) => x.id == this.#moveId);
-        if (!move) throw new Error(`Cant' find move Id ${this.#moveId}`);
+        const move = CityHelpers.getMoves().find((x) => x.id == this.moveId);
+        if (!move) throw new Error(`Cant' find move Id ${this.moveId}`);
         return move;
     }
 
@@ -79,15 +88,21 @@ export class CityRoll {
         selectedList: ActivatedTagFormat[] = [],
         options: Partial<RollOptions> = {},
     ) {
-        const CR = new CityRoll(moveId, actor, selectedList, options);
-        return await CR.execMove();
+        if (CitySettings.isBladesMode()) {
+            const { BladesRoll } = await import("./blades-roll.js");
+            const BR = new BladesRoll(moveId, actor, selectedList, options);
+            return await BR.execMove();
+        } else {
+            const CR = new CityRoll(moveId, actor, selectedList, options);
+            return await CR.execMove();
+        }
     }
 
     async execMove() {
-        this.#prepareModifiers();
-        const moveId = this.#moveId;
-        const actor = this.#actor;
-        const options = this.#options;
+        this.prepareModifiers();
+        const moveId = this.moveId;
+        const actor = this.actor;
+        const options = this.options;
         const move = CityHelpers.getMoves().find((x) => x.id == moveId)!;
         const themeType = options?.newtype ?? move.system.theme_class;
         switch (move.system.subtype) {
@@ -107,7 +122,8 @@ export class CityRoll {
         if (move.isAutoDynamite()) options.dynamiteAllowed = true;
         if (move.hasEffectClass("ALLOW_STATUS")) options.noStatus = false;
         if (!(options.noTags && options.noStatus)) {
-            if (await CityRoll.verifyRequiredInfo(moveId, actor!)) {
+            const klass = await CityRoll.getRollClass();
+            if (await klass.verifyRequiredInfo(moveId, actor!)) {
                 const dialogReturn = await RollDialog.create(
                     this,
                     moveId,
@@ -116,19 +132,19 @@ export class CityRoll {
                 if (!dialogReturn) return;
                 let { modList, options } = dialogReturn;
 
-                this.#selectedList = modList;
-                this.#options = { ...options, ...this.#options };
+                this.selectedList = modList;
+                this.options = { ...options, ...this.options };
             }
         }
         return await this.execRoll();
     }
 
-    #prepareModifiers() {
-        const actor = this.#actor;
-        const options = this.#options;
+    protected prepareModifiers() {
+        const actor = this.actor;
+        const options = this.options;
         if (options.noRoll || this.move.system.subtype == "noroll") {
-            this.#modifiers = [];
-            this.#tags = [];
+            this.modifiers = [];
+            this.tags = [];
             return this;
         }
         if (!actor) {
@@ -136,7 +152,7 @@ export class CityRoll {
                 `Can't make an actorless move except with a no-roll move`,
             );
         }
-        const allModifiers = this.#selectedList.filter((x) => {
+        const allModifiers = this.selectedList.filter((x) => {
             const tag = (
                 CityHelpers.getOwner(x.ownerId, x.tokenId) as CityActor
             ).getTag(x.tagId);
@@ -227,13 +243,13 @@ export class CityRoll {
                 strikeout: false,
             });
         }
-        this.#modifiers = modifiers;
-        this.#options.modifiers = modifiers;
-        this.#tags = tags;
+        this.modifiers = modifiers;
+        this.options.modifiers = modifiers;
+        this.tags = tags;
     }
 
     usedWeaknessTag() {
-        return this.#tags.some((x) => {
+        return this.tags.some((x) => {
             const tag = (CityHelpers.getOwner(x.ownerId!) as CityActor).getTag(
                 x.tagId!,
             )!;
@@ -245,8 +261,8 @@ export class CityRoll {
         });
     }
 
-    async #getRoll() {
-        const options = this.#options;
+    protected async getRoll() {
+        const options = this.options;
         let rstring;
         if (options.noRoll) {
             rstring = `0d6+1000`;
@@ -255,19 +271,19 @@ export class CityRoll {
         } else {
             rstring = `2d6`;
         }
-        const move = CityDB.getMoveById(this.#moveId);
+        const move = CityDB.getMoveById(this.moveId);
         if (!move) {
-            throw new Error(`No Move found for Id: ${this.#moveId}`);
+            throw new Error(`No Move found for Id: ${this.moveId}`);
         }
         let r = new MistRoll(
             rstring,
             {},
             {
-                ...this.#options,
-                modifiers: this.#modifiers,
-                tags: this.#tags,
-                actorId: this.#actor?.id,
-                moveId: this.#moveId,
+                ...this.options,
+                modifiers: this.modifiers,
+                tags: this.tags,
+                actorId: this.actor?.id,
+                moveId: this.moveId,
                 canCreateTags: move.canCreateTags(),
             },
         );
@@ -276,19 +292,20 @@ export class CityRoll {
             Debug(r);
             throw new Error("Null Total");
         }
-        this.#roll = r;
+        this.roll = r;
     }
 
-    async #getContent() {
-        const html = await CityRoll.#_getContent(this.#roll!);
-        this.#html = html;
+    protected async getContent() {
+        const klass = await CityRoll.getRollClass();
+        const html = await klass._getContent(this.roll!);
+        this.html = html;
         return html;
     }
 
     /** Takes a foundry roll and an options object containing
 	{moveList ?: { see generateMoveList function} }
 	*/
-    static async #_getContent(
+    protected static async _getContent(
         roll: MistRoll,
         otherOptions: Record<string, unknown> = {},
     ) {
@@ -308,12 +325,12 @@ export class CityRoll {
             },
         );
         const options = roll.options;
-        const { power, adjustment } = CityRoll.getPower(options);
+        const { power, adjustment } = this.getPower(options);
         const moveList = otherOptions?.moveList ?? null;
         const moveId = roll.options.moveId;
         const move = CityHelpers.getMoves().find((x) => x.id == moveId)!;
         const { total, roll_adjustment } = this.getTotal(roll);
-        const roll_status = CityRoll.getRollStatus(roll, total, options);
+        const roll_status = this.getRollStatus(roll, total, options);
         const moveListRaw = CityItem.generateMoveList(
             move!,
             roll_status,
@@ -351,8 +368,7 @@ export class CityRoll {
     }
 
     static getTotal(roll: MistRoll) {
-        // const modifiers = roll.options.modifiers;
-        const { bonus, roll_adjustment } = CityRoll.getRollBonus(roll.options);
+        const { bonus, roll_adjustment } = this.getRollBonus(roll.options);
         return { total: bonus + roll.total, roll_adjustment };
     }
 
@@ -364,7 +380,7 @@ export class CityRoll {
         }[] = rollOptions.modifiers!,
         misc_mod = 0,
     ) {
-        const { power } = CityRoll.getRollPower(rollOptions, modifiers);
+        const { power } = this.getRollPower(rollOptions, modifiers);
         const rollCap = CityHelpers.getRollCap();
         const capped = Math.min(rollCap, power + misc_mod);
         const roll_adjustment = capped - power;
@@ -493,36 +509,36 @@ export class CityRoll {
         else return 0;
     }
 
-    async #sendRollToChat(messageOptions = {}) {
+    protected async sendRollToChat(messageOptions = {}) {
         const messageData: MessageData = {
             speaker: ChatMessage.getSpeaker(),
-            content: this.#html,
+            content: this.html,
             user: game.user,
             style: CONST.CHAT_MESSAGE_STYLES.ROLL,
-            sound: this.#roll ? CONFIG.sounds.dice : undefined,
-            rolls: this.#roll ? [this.#roll] : undefined,
+            sound: this.roll ? CONFIG.sounds.dice : undefined,
+            rolls: this.roll ? [this.roll] : undefined,
         } satisfies MessageData;
-        this.#msgId = (
-            await ChatMessage.create(messageData, messageOptions)
-        ).id;
+        this.msgId = (await ChatMessage.create(messageData, messageOptions)).id;
     }
 
-    async #secondaryEffects() {
-        if (CitySettings.useClueBoxes()) await this.#clueBoxes();
+    protected async secondaryEffects() {
+        if (CitySettings.useClueBoxes()) await this.clueBoxes();
     }
 
-    async #clueBoxes() {
-        const roll = this.#roll;
+    protected async clueBoxes() {
+        const klass = await CityRoll.getRollClass();
+
+        const roll = this.roll;
         if (!roll) throw new Error("Can't find roll");
         const moveId = roll.options.moveId;
         const options = roll.options;
         if (!options.actorId) return;
         const actor = CityDB.getActorById(options.actorId);
         if (!actor) throw new Error(`Can't find actor ${options.actorId}`);
-        const { total } = CityRoll.getTotal(roll);
-        const { power } = CityRoll.getPower(roll.options);
+        const { total } = klass.getTotal(roll);
+        const { power } = klass.getPower(roll.options);
         const modifiers = options.modifiers!;
-        const msgId = this.#msgId;
+        const msgId = this.msgId;
         const move = CityHelpers.getMoves().find((x) => x.id == moveId)!;
         for (const effect of move.effect_classes) {
             switch (effect) {
@@ -550,16 +566,16 @@ export class CityRoll {
         }
     }
 
-    async #rollCleanupAndAftermath() {
-        await this.#spendHelpHurt();
-        await this.#handleBurnTags();
-        await this.#handleWeakness();
-        await this.#deleteTempStatuses();
+    protected async rollCleanupAndAftermath() {
+        await this.spendHelpHurt();
+        await this.handleBurnTags();
+        await this.handleWeakness();
+        await this.deleteTempStatuses();
     }
 
-    async #spendHelpHurt() {
+    protected async spendHelpHurt() {
         try {
-            const helpHurt = this.#modifiers.filter(
+            const helpHurt = this.modifiers.filter(
                 (x) => x.subtype == "help" || x.subtype == "hurt",
             );
             for (let hh of helpHurt) {
@@ -583,9 +599,9 @@ export class CityRoll {
         }
     }
 
-    async #handleBurnTags() {
-        const tags = this.#tags;
-        const options = this.#options;
+    protected async handleBurnTags() {
+        const tags = this.tags;
+        const options = this.options;
         if (options.burnTag && options.burnTag.length)
             for (const { ownerId, tagId, tokenId } of tags.filter(
                 (x) => x.tagId == options.burnTag,
@@ -610,8 +626,8 @@ export class CityRoll {
         }
     }
 
-    async #handleWeakness() {
-        const tags = this.#tags;
+    protected async handleWeakness() {
+        const tags = this.tags;
         for (const { ownerId, amount, tagId, tokenId } of tags) {
             const tag = (
                 CityHelpers.getOwner(ownerId!, tokenId) as CityActor
@@ -628,9 +644,9 @@ export class CityRoll {
         }
     }
 
-    async #deleteTempStatuses() {
+    protected async deleteTempStatuses() {
         if (!CitySettings.deleteTemporaryStatuses()) return;
-        const statuses = this.#modifiers.filter((x) => x.type == "status");
+        const statuses = this.modifiers.filter((x) => x.type == "status");
         for (const { ownerId, id, tokenId } of statuses) {
             const status = (
                 CityHelpers.getOwner(ownerId!, tokenId) as CityActor
@@ -658,7 +674,7 @@ export class CityRoll {
 
     themeClassRoll(themeType: ThemeType) {
         if (!themeType) throw new Error("Theme type can't be empty");
-        foundry.utils.mergeObject(this.#options, {
+        foundry.utils.mergeObject(this.options, {
             noTags: true,
             noStatus: true,
             themeType,
@@ -667,7 +683,7 @@ export class CityRoll {
     }
 
     logosRoll() {
-        foundry.utils.mergeObject(this.#options, {
+        foundry.utils.mergeObject(this.options, {
             noTags: true,
             noStatus: true,
             logosRoll: true,
@@ -676,7 +692,7 @@ export class CityRoll {
     }
 
     mythosRoll() {
-        foundry.utils.mergeObject(this.#options, {
+        foundry.utils.mergeObject(this.options, {
             noTags: true,
             noStatus: true,
             mythosRoll: true,
@@ -685,7 +701,7 @@ export class CityRoll {
     }
 
     mistRoll() {
-        foundry.utils.mergeObject(this.#options, {
+        foundry.utils.mergeObject(this.options, {
             noTags: true,
             noStatus: true,
             mistRoll: true,
@@ -699,7 +715,7 @@ export class CityRoll {
             noStatus: true,
             noRoll: true,
         };
-        foundry.utils.mergeObject(this.#options, rollOptions);
+        foundry.utils.mergeObject(this.options, rollOptions);
     }
 
     static async diceModListeners(
@@ -707,21 +723,21 @@ export class CityRoll {
         html: JQuery,
         _data: unknown,
     ): Promise<true> {
-        html.on("click", ".edit-roll", CityRoll._editRoll.bind(this));
+        html.on("click", ".edit-roll", this._editRoll.bind(this));
         html.on(
             "click",
             ".roll-selector-checkbox",
-            CityRoll._checkOption.bind(this),
+            this._checkOption.bind(this),
         );
         html.on(
             "click",
             ".roll-modifiers .name",
-            CityRoll._strikeoutModifierToggle.bind(this),
+            this._strikeoutModifierToggle.bind(this),
         );
         html.on(
             "click",
             ".strikeout-toggle",
-            CityRoll._strikeoutModifierToggle.bind(this),
+            this._strikeoutModifierToggle.bind(this),
         );
         return true;
     }
@@ -1045,20 +1061,22 @@ export class CityRoll {
                 modifier.strikeout = !modifier.strikeout;
             }
         });
-        await CityRoll._updateMessage(messageId);
+        const klass = await CityRoll.getRollClass();
+        await klass._updateMessage(messageId);
     }
 
     static async _checkOption(event: Event) {
         event.preventDefault();
+        const klass = await CityRoll.getRollClass();
         const messageId = HTMLTools.getClosestData(event, "messageId");
         const message = game.messages.get(messageId)! as MistChatMessage;
         const roll = message.rolls[0];
-        const { power } = CityRoll.getPower(roll.options);
-        const { total } = CityRoll.getTotal(roll);
+        const { power } = klass.getPower(roll.options);
+        const { total } = klass.getTotal(roll);
         const move = CityHelpers.getMoves().find(
             (x) => x.id == roll.options.moveId,
         )!;
-        const roll_status = CityRoll.getRollStatus(roll, total, roll.options);
+        const roll_status = klass.getRollStatus(roll, total, roll.options);
         const moveListRaw = CityItem.generateMoveList(
             move,
             roll_status,
@@ -1093,7 +1111,6 @@ export class CityRoll {
         }
         if (!item) throw new Error(`Item ${listitem} not found`);
         const max_choices = CityItem.getMaxChoices(move, roll_status, power);
-        // const truecost = Math.abs(item.cost);
         let current_choices = 0;
         $(event.target!)
             .closest(".move-list")
@@ -1105,17 +1122,15 @@ export class CityRoll {
             });
 
         if (item.checked) {
-            // console.log("unchecking box");
             item.checked = false;
         } else if (!item.checked && current_choices <= max_choices) {
-            // console.log("checking box");
             item.checked = true;
         } else {
             console.warn("invalid choice");
             return false;
         }
         await message.setFlag("city-of-mist", "checkedOptions", moveList);
-        return await CityRoll._updateMessage(messageId);
+        return await klass._updateMessage(messageId);
     }
 
     static async _editRoll(event: Event) {
@@ -1125,20 +1140,22 @@ export class CityRoll {
         const roll = message.rolls[0];
         const rollOptions = roll.options;
         await CityDialogs.getRollModifierBox(rollOptions); // Poor style here since getModBox actually modifies the options it's given. consider refactor
-        await CityRoll._updateMessage(messageId, roll);
+        const klass = await CityRoll.getRollClass();
+        await klass._updateMessage(messageId, roll);
     }
 
     static async verifyCheckedOptions(
         checkedOptions: ReturnType<(typeof CityItem)["generateMoveList"]>,
         roll: MistRoll,
     ) {
-        const { power } = CityRoll.getPower(roll.options);
+        const klass = await CityRoll.getRollClass();
+        const { power } = klass.getPower(roll.options);
         const moveId = roll.options.moveId;
         const move = CityHelpers.getMoves().find((x) => x.id == moveId);
         if (!move)
             throw new Error(`Couldn't find move for some reason ${moveId}`);
         const { total } = this.getTotal(roll);
-        const roll_status = CityRoll.getRollStatus(roll, total, roll.options);
+        const roll_status = klass.getRollStatus(roll, total, roll.options);
         const max_choices = CityItem.getMaxChoices(move, roll_status, power);
         const curr_choices =
             checkedOptions?.filter((x) => x.checked)?.length ?? 0;
@@ -1174,6 +1191,7 @@ export class CityRoll {
         messageId: string,
         newRoll: MistRoll | null = null,
     ) {
+        const klass = await CityRoll.getRollClass();
         if (newRoll && !game.user.isGM)
             console.warn("Trying to update roll as non-GM");
         const message = game.messages.get(messageId)! as MistChatMessage;
@@ -1185,10 +1203,10 @@ export class CityRoll {
             );
             let newContent;
             if (checkedOptions)
-                newContent = await CityRoll.#_getContent(roll, {
+                newContent = await klass._getContent(roll, {
                     moveList: checkedOptions,
                 });
-            else newContent = await CityRoll.#_getContent(roll);
+            else newContent = await klass._getContent(roll);
             let msg;
             if (game.user.isGM)
                 msg = await message.update({
