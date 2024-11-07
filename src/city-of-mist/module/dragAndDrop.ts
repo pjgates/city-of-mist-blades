@@ -1,3 +1,4 @@
+import { Status } from "./city-item.js";
 import { STATUS_CATEGORIES } from "./config/status-categories.js";
 import { StatusCreationOptions } from "./config/statusDropTypes.js";
 import { HTMLHandlers } from "./universal-html-handlers.js";
@@ -15,7 +16,6 @@ export class DragAndDrop {
 	}
 
 	static async dropStatusOnActor(statusName: string, actor: CityActor, options : StatusCreationOptions) {
-		// const protostatus = await CityHelpers.parseStatusString(textStatus);
 		await actor.sheet.statusDrop(statusName , options);
 	}
 
@@ -27,18 +27,21 @@ export class DragAndDrop {
 		return draggable.data("draggableType") as "status" | "tag" | "gmmove" | "threat";
 	}
 
-	static async dropDraggableOnSceneTags (draggable: JQuery) {
+	static async dropDraggableOnSceneTags (draggable: JQuery, dragOptions: DragAndDropOptions = {}) {
 		if (!game.user.isGM) return;
 		const draggableType = DragAndDrop.getDraggableType(draggable);
-		const options = draggable.data("options") ?? {};
+		const options : StatusCreationOptions | TagCreationOptions = draggable.data("options") ?? {};
 		switch ( draggableType ) {
 			case "status":
-				// const protoStatus = await CityHelpers.parseStatusString(draggable.text());
 				const name = draggable.data("name") ?? "name unknown";
-				await SceneTags.statusDrop(name, options);
+				const statusOptions = options as StatusCreationOptions;
+				if (dragOptions.mergeStatus) {
+					statusOptions.mergeWithStatus = dragOptions.mergeStatus;
+				}
+				await SceneTags.statusDrop(name, statusOptions);
 				break;
 			case "tag":
-					await SceneTags.createSceneTag(draggable.text(), true, options);
+					await SceneTags.createSceneTag(draggable.text(), true, options as TagCreationOptions);
 				break;
 			case "gmmove":
 			case "threat":
@@ -49,18 +52,22 @@ export class DragAndDrop {
 		}
 	}
 
-	static async dropDraggableOnActor(draggable: JQuery, actor: CityActor) {
+	static async dropDraggableOnActor(draggable: JQuery, actor: CityActor, dragOptions: DragAndDropOptions = {}) {
 		if (!actor.isOwner) return;
-		let options = draggable.data("options") ?? {};
+		let options : StatusCreationOptions | TagCreationOptions  = draggable.data("options") ?? {};
 		const draggableType = DragAndDrop.getDraggableType(draggable);
 		const name = draggable.data("name") ?? "name unknown";
 		switch (draggableType) {
 			case "status":{
-				DragAndDrop.dropStatusOnActor(name, actor, options);
+				const statusOptions = options as StatusCreationOptions;
+				if (dragOptions.mergeStatus) {
+					statusOptions.mergeWithStatus = dragOptions.mergeStatus;
+				}
+				DragAndDrop.dropStatusOnActor(name, actor, statusOptions);
 				break;
 			}
 			case "tag": {
-				DragAndDrop.dropTagOnActor(name, actor, options);
+				DragAndDrop.dropTagOnActor(name, actor, options as TagCreationOptions);
 				break;
 			}
 			case "gmmove":
@@ -84,26 +91,43 @@ export class DragAndDrop {
 		}
 	}
 
-	static async statusDrop(actor: CityActor, name:string, options: StatusCreationOptions) {
+	static async statusDrop(actor: CityActor, name: string, options: StatusCreationOptions) {
 		const tier = options.tier;
-		if (!tier)
+		if (!tier || tier < 0)
 			throw new Error(`Tier is not valid ${tier}`);
-		const retval = await CityDialogs.statusDropDialog(actor, name, {...options, tier});
-		if (retval == null) return null;
+		const retval = await ( options.mergeWithStatus
+			? CityDialogs.mergeWithStatusDialog(options.mergeWithStatus, name, options)
+			: CityDialogs.statusDropDialog(actor, name, {...options, tier}));
+		if (retval == null) {
+			return null;
+		}
 		switch (retval.action) {
 			case 'create':
 				const status = await actor.addOrCreateStatus(retval.name,{ ...options, tier: retval.tier, pips: retval.pips});
 				await CityHelpers.modificationLog(actor, "Created", status, `tier  ${retval.tier}`);
 				return status;
-			case 'merge':
+			case 'add':
+			case 'merge': {
 				const origStatus =   actor.getStatus(retval.statusId!)!;
 				options.newName = retval.name;
 				await origStatus.addStatus(retval.tier, options);
 				await HTMLHandlers.reportStatusAdd(actor, retval.tier,  {name: origStatus.name, tier: origStatus.system.tier,pips: origStatus.system.pips}, origStatus);
 				return origStatus;
-			default:
-				retval.action satisfies never;
-				throw new Error(`Unknown action : ${retval.action}`);
+			} case "subtract": {
+				const origStatus =   actor.getStatus(retval.statusId!)!;
+				options.newName = retval.name;
+				await origStatus.subtractStatus(retval.tier, options.newName);
+				await HTMLHandlers.reportStatusSubtract(actor, retval.tier,  {name: origStatus.name, tier: origStatus.system.tier,pips: origStatus.system.pips}, origStatus);
+				return origStatus;
+			} case "override": {
+				const origStatus =   actor.getStatus(retval.statusId!)!;
+				await origStatus.delete();
+				const status = await actor.addOrCreateStatus(retval.name,{ ...options, tier: retval.tier, pips: retval.pips});
+				await CityHelpers.modificationLog(actor, `Overrode Status: ${origStatus.name} with ${status} tier  ${retval.tier}`);
+				return status;
+			} default:
+				retval satisfies never;
+				throw new Error(`Unknown action : ${(retval as any)?.action}`);
 		}
 	}
 
@@ -178,4 +202,8 @@ Hooks.on("canvasReady", DragAndDrop.init);
 //@ts-ignore
 window.DragAndDrop = DragAndDrop;
 
+
+type DragAndDropOptions = {
+	mergeStatus ?: Status;
+}
 
