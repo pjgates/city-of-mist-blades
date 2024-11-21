@@ -15,7 +15,7 @@
         }
     ],
     "url": "https://github.com/pjgates/city-of-mist-blades/",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "compatibility": {
         "minimum": "12",
         "verified": "12",
@@ -106,5 +106,5 @@
     ],
     "socket": true,
     "manifest": "https://raw.githubusercontent.com/pjgates/city-of-mist-blades/main/system.json",
-    "download": "https://github.com/pjgates/city-of-mist/releases/download/v0.0.1/city-of-mist.zip"
+    "download": "https://github.com/pjgates/city-of-mist/releases/download/v0.0.2/city-of-mist.zip"
 }
