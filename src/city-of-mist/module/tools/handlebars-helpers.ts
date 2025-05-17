@@ -46,13 +46,19 @@ export class HandlebarsHelpers {
 		};
 	}
 } // end of class
-export function localizeS (string :string) {
-	if (!string.startsWith("#"))
-		//@ts-ignore
-		return new Handlebars.SafeString(string);
-	const localizeCode = string.substring(1);
-	const localized = game.i18n.localize(localizeCode);
-	//@ts-ignore
-	return new Handlebars.SafeString(localized);
+export function localizeS(string: string | { string: string }) {
+    // If 'string' is an object with a 'string' property, extract it
+    if (typeof string === 'object' && string !== null && 'string' in string) {
+        string = string.string;
+    }
+    // Ensure 'string' is now a string before proceeding
+    if (typeof string !== 'string') {
+        // Handle unexpected types gracefully
+        return new Handlebars.SafeString('');
+    }
+    if (!string.startsWith("#"))
+        return new Handlebars.SafeString(string);
+    const localizeCode = string.substring(1);
+    const localized = game.i18n.localize(localizeCode);
+    return new Handlebars.SafeString(localized);
 }
-

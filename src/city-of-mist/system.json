@@ -15,13 +15,15 @@
         }
     ],
     "url": "https://github.com/pjgates/city-of-mist-blades/",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "compatibility": {
         "minimum": "12",
         "verified": "12",
         "maximum": "12"
     },
-    "esmodules": ["module/city.js"],
+    "esmodules": [
+        "module/city.js"
+    ],
     "styles": [
         "styles/city.css",
         "module/token-tooltip/tooltip.css",
@@ -71,5 +73,5 @@
     ],
     "socket": true,
     "manifest": "https://raw.githubusercontent.com/pjgates/city-of-mist-blades/main/system.json",
-    "download": "https://github.com/pjgates/city-of-mist/releases/download/v0.0.1/city-of-mist.zip"
+    "download": "https://github.com/pjgates/city-of-mist/releases/download/v0.0.3/city-of-mist.zip"
 }
